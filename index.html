@@ -26,7 +26,7 @@
             .day { background: #1a1a1a !important; border-color: #333 !important; }
             .day span { color: #eee !important; }
             .nav-btn, .today-btn, .step-btn { background: #333 !important; border: 1px solid #444 !important; color: white !important; }
-            .action-btn { background: transparent !important; color: white !important; border-color: white !important; }
+            .action-btn { background: var(--card) !important; color: var(--text) !important; border-color: var(--border) !important; }
             .back-btn { background: #3a3a3c !important; color: white !important; }
         }
         body { background: #222; margin: 0; display: flex; justify-content: center; font-family: -apple-system, sans-serif; color: var(--text); }
@@ -34,7 +34,6 @@
         
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 12px; }
         .month-selector-btn { border: none; background: transparent; font-weight: bold; font-size: 16px; color: var(--text); cursor: pointer; padding: 5px 10px; border-radius: 8px; }
-        .month-selector-btn:active { background: rgba(128,128,128,0.1); }
         .month-display { display: flex; align-items: center; gap: 4px; }
         .today-btn { background: #eee; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
         .nav-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
@@ -51,21 +50,36 @@
         .stay-start { border-radius: 8px 0 0 8px; }
         .stay-end { border-radius: 0 8px 8px 0; }
 
-        /* 底部區域包裹 */
-        .footer-area {
-            margin-top: auto;
-            background: var(--card);
-            border-top: 1px solid var(--border);
-            border-radius: 15px 15px 0 0;
-            padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+        /* 拆分：按鈕區域 (漂浮感) */
+        .btn-container {
+            padding: 5px 10px 10px;
+            display: flex;
+            gap: 8px;
             flex-shrink: 0;
         }
-        
-        /* 按鈕列樣式 */
-        .btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .action-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); padding: 9px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .action-btn { 
+            background: white; 
+            color: var(--primary); 
+            border: 1.5px solid var(--primary); 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
         .btn-main { flex: 2; }
         .btn-sub { flex: 1; }
+
+        /* 拆分：置底統計區域 */
+        .footer-summary { 
+            padding: 15px 5px calc(15px + env(safe-area-inset-bottom)); 
+            background: var(--card); 
+            border-top: 1px solid var(--border); 
+            border-radius: 20px 20px 0 0; 
+            flex-shrink: 0; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
 
         .footer-line { margin: 4px 0; font-size: 13px; font-weight: bold; color: var(--footer-text); white-space: nowrap; display: flex; justify-content: center; align-items: center; gap: 4px; }
         .footer-line span { color: var(--accent); font-size: 14.5px; }
@@ -100,11 +114,12 @@
 
     <div id="calBox" style="overflow-y: auto; flex: 1;"></div>
     
-    <div class="footer-area">
-        <div class="btn-row">
-            <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
-            <button class="action-btn btn-sub" onclick="showHelp()">❓使用說明</button>
-        </div>
+    <div class="btn-container">
+        <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
+        <button class="action-btn btn-sub" onclick="showHelp()">❓使用說明</button>
+    </div>
+
+    <div class="footer-summary" id="footerSummary">
         <div class="footer-line" id="line1">載入中...</div>
         <div class="footer-line">
             若需入境 
@@ -130,7 +145,7 @@
             <select id="jumpMonth">
                 <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option><option value="3">4月</option>
                 <option value="4">5月</option><option value="5">6月</option><option value="6">7月</option><option value="7">8月</option>
-                <option value="8">9月</option><option value="9">10月</option><option value="10">11月</option><option value="11">12月</option>
+                <option value="8">9月</option><option value="9">10月</option><option value="11">11月</option><option value="12">12月</option>
             </select>
         </div>
         <button class="main-btn" onclick="executeJump()">跳轉</button>
@@ -183,21 +198,16 @@
     function goToday() { cur = new Date(); render(); }
     function showList() { document.getElementById('mList').style.display='flex'; renderList(); }
     
-    // 智慧型年份選單生成
     function showJump() {
         const ySel = document.getElementById('jumpYear');
         ySel.innerHTML = "";
-        
-        // 找到歷史紀錄中最老的一年
         let minYear = new Date().getFullYear();
         data.forEach(item => {
             const y = new Date(item.s).getFullYear();
             if(y < minYear) minYear = y;
         });
-
-        const startYear = minYear - 1; // 最早紀錄 - 1
-        const endYear = new Date().getFullYear() + 1; // 今年 + 1
-
+        const startYear = minYear - 1;
+        const endYear = new Date().getFullYear() + 1;
         for(let i = startYear; i <= endYear; i++) {
             const opt = document.createElement('option');
             opt.value = i; opt.innerText = i + "年";
