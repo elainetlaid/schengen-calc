@@ -32,20 +32,13 @@
         body { background: #222; margin: 0; display: flex; justify-content: center; font-family: -apple-system, sans-serif; color: var(--text); }
         .app { width: 390px; height: 100vh; background: var(--bg); padding: env(safe-area-inset-top) 10px 0; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* Header 樣式 */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 12px; }
         .month-selector-btn { border: none; background: transparent; font-weight: bold; font-size: 16px; color: var(--text); cursor: pointer; padding: 5px 10px; border-radius: 8px; }
         .month-selector-btn:active { background: rgba(128,128,128,0.1); }
         .month-display { display: flex; align-items: center; gap: 4px; }
         .today-btn { background: #eee; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
         .nav-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        /* 按鈕列樣式 */
-        .btn-row { display: flex; gap: 8px; margin: 8px 0; }
-        .action-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); padding: 10px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .btn-main { flex: 2; }
-        .btn-sub { flex: 1; }
-
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--primary); color: white; font-weight: bold; text-align: center; padding: 4px 0; font-size: 12px; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 10px; }
         .day { background: white; height: 42px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; box-sizing: border-box; }
@@ -58,14 +51,22 @@
         .stay-start { border-radius: 8px 0 0 8px; }
         .stay-end { border-radius: 0 8px 8px 0; }
 
-        .footer-summary { 
-            margin-top: auto; 
-            padding: 12px 5px calc(12px + env(safe-area-inset-bottom)); 
-            background: var(--card); 
-            border-top: 1px solid var(--border); 
-            border-radius: 15px 15px 0 0; 
-            flex-shrink: 0; 
+        /* 底部區域包裹 */
+        .footer-area {
+            margin-top: auto;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            border-radius: 15px 15px 0 0;
+            padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
+            flex-shrink: 0;
         }
+        
+        /* 按鈕列樣式 */
+        .btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .action-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); padding: 9px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .btn-main { flex: 2; }
+        .btn-sub { flex: 1; }
+
         .footer-line { margin: 4px 0; font-size: 13px; font-weight: bold; color: var(--footer-text); white-space: nowrap; display: flex; justify-content: center; align-items: center; gap: 4px; }
         .footer-line span { color: var(--accent); font-size: 14.5px; }
         .calc-input-group { display: flex; align-items: center; gap: 5px; }
@@ -96,15 +97,14 @@
         </div>
         <button class="nav-btn" onclick="changeMonth(1)">▶</button>
     </div>
-    
-    <div class="btn-row">
-        <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
-        <button class="action-btn btn-sub" onclick="showHelp()">❓使用說明</button>
-    </div>
 
     <div id="calBox" style="overflow-y: auto; flex: 1;"></div>
     
-    <div class="footer-summary" id="footerSummary">
+    <div class="footer-area">
+        <div class="btn-row">
+            <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
+            <button class="action-btn btn-sub" onclick="showHelp()">❓使用說明</button>
+        </div>
         <div class="footer-line" id="line1">載入中...</div>
         <div class="footer-line">
             若需入境 
@@ -143,9 +143,9 @@
         <h3 style="margin-top:0; color:var(--primary);">使用說明</h3>
         <div class="help-text">
             <b>1. 開始使用</b><br>點擊「紀錄管理」>「新增」，輸入歷史出入境日期。日曆右下角會顯示該日剩餘天數。<br><br>
-            <b>2. 行程試算</b><br>在首頁下方輸入未來計畫停留天數，系統會自動算出最後紀錄後「最快出發日」。<br><br>
-            <b>3. 快速切換</b><br>點擊上方年份日期標題，可快速跳轉到指定月份。<br><br>
-            <b>4. 備份與還原</b><br>換手機前請至「紀錄管理」>「備份」，將代碼存至記事本。新手機點擊「還原」貼上即可。
+            <b>2. 行程試算</b><br>在下方的輸入框填入計畫停留天數，系統會自動算出最後紀錄後「最快出發日」。<br><br>
+            <b>3. 快速切換</b><br>點擊頂部年份月份文字，可快速跳轉到指定日期。<br><br>
+            <b>4. 備份與還原</b><br>本工具無雲端儲存。換手機前請至「紀錄管理」>「備份」，將代碼存至記事本。新手機點擊「還原」貼上即可。
         </div>
         <button class="back-btn" onclick="hide('mHelp')">了解了</button>
     </div>
@@ -183,11 +183,22 @@
     function goToday() { cur = new Date(); render(); }
     function showList() { document.getElementById('mList').style.display='flex'; renderList(); }
     
+    // 智慧型年份選單生成
     function showJump() {
         const ySel = document.getElementById('jumpYear');
         ySel.innerHTML = "";
-        const thisY = new Date().getFullYear();
-        for(let i=thisY-10; i<=thisY+10; i++) {
+        
+        // 找到歷史紀錄中最老的一年
+        let minYear = new Date().getFullYear();
+        data.forEach(item => {
+            const y = new Date(item.s).getFullYear();
+            if(y < minYear) minYear = y;
+        });
+
+        const startYear = minYear - 1; // 最早紀錄 - 1
+        const endYear = new Date().getFullYear() + 1; // 今年 + 1
+
+        for(let i = startYear; i <= endYear; i++) {
             const opt = document.createElement('option');
             opt.value = i; opt.innerText = i + "年";
             if(i === cur.getFullYear()) opt.selected = true;
@@ -289,7 +300,6 @@
         document.getElementById('mLabel').innerText = `${cur.getFullYear()}年 ${cur.getMonth()+1}月`;
         const m1Y = cur.getFullYear(), m1M = cur.getMonth();
         const m2Date = new Date(m1Y, m1M + 1, 1);
-        // 修正：第一個日曆不顯示重複標題
         document.getElementById('calBox').innerHTML = renderMonth(m1Y, m1M, true) + renderMonth(m2Date.getFullYear(), m2Date.getMonth(), false);
         if (data.length > 0) {
             const lastDateStr = data.reduce((max, item) => item.e > max ? item.e : max, data[0].e);
@@ -302,7 +312,6 @@
     }
 
     function renderMonth(y, m, isFirst) {
-        // 第一個月份不顯示日期標題
         let titleHtml = isFirst ? "" : `<div style="text-align:center;font-weight:bold;margin:8px 0 4px; color:#777;font-size:14px;">${y}年 ${m+1}月</div>`;
         let html = titleHtml + `<div class="weekdays"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div><div class="calendar">`;
         let f = new Date(y, m, 1).getDay(), l = new Date(y, m+1, 0).getDate();
