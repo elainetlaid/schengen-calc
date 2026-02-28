@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Schengen Pro</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,19 +21,22 @@
                 --stay-color: #3a5ba0; --footer-text: #ffffff;
             }
             body { background: #000; color: #eee; }
+            h3 { color: #fff !important; } /* 修正標題在夜間模式的顏色 */
             input { background: #3a3a3c !important; color: white !important; border-color: #444 !important; }
             .day { background: #1a1a1a !important; border-color: #333 !important; }
             .day span { color: #eee !important; }
-            .nav-btn, .today-btn, .step-btn { background: #333 !important; border: 1px solid #444 !important; color: white !important; }
+            .nav-btn, .today-btn, .step-btn, .help-btn { background: #333 !important; border: 1px solid #444 !important; color: white !important; }
             .record-btn { background: transparent !important; color: white !important; border-color: white !important; }
             .back-btn { background: #3a3a3c !important; color: white !important; }
         }
         body { background: #222; margin: 0; display: flex; justify-content: center; font-family: -apple-system, sans-serif; color: var(--text); }
-        .app { width: 390px; height: 100vh; background: var(--bg); padding: env(safe-area-inset-top) 10px 8px; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; }
+        .app { width: 390px; height: 100vh; background: var(--bg); padding: env(safe-area-inset-top) 10px 0; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; }
         .month-display { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 16px; }
-        .today-btn { background: #eee; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
+        .btn-group { display: flex; gap: 5px; }
+        .today-btn, .help-btn { background: #eee; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
         .nav-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
         .record-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); width: 100%; padding: 10px; border-radius: 10px; font-size: 14px; margin: 8px 0; font-weight: bold; cursor: pointer; }
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--primary); color: white; font-weight: bold; text-align: center; padding: 4px 0; font-size: 12px; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 5px; }
@@ -47,8 +50,15 @@
         .stay-start { border-radius: 8px 0 0 8px; }
         .stay-end { border-radius: 0 8px 8px 0; }
 
-        /* 底部樣式 */
-        .footer-summary { margin-top: auto; padding: 12px 5px; background: var(--card); border-top: 1px solid var(--border); border-radius: 15px 15px 0 0; flex-shrink: 0; }
+        /* 底部修正：加入安全區域感應 */
+        .footer-summary { 
+            margin-top: auto; 
+            padding: 12px 5px calc(12px + env(safe-area-inset-bottom)); /* 避開 iPhone 底部橫條 */
+            background: var(--card); 
+            border-top: 1px solid var(--border); 
+            border-radius: 15px 15px 0 0; 
+            flex-shrink: 0; 
+        }
         .footer-line { margin: 4px 0; font-size: 13px; font-weight: bold; color: var(--footer-text); white-space: nowrap; display: flex; justify-content: center; align-items: center; gap: 4px; }
         .footer-line span { color: var(--accent); font-size: 14.5px; }
         .calc-input-group { display: flex; align-items: center; gap: 5px; }
@@ -56,7 +66,10 @@
         .step-btn { background: #eee; border: 1px solid #ccc; border-radius: 4px; width: 24px; height: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
-        .modal-content { background: var(--modal); width: 100%; max-width: 340px; padding: 18px; border-radius: 20px; box-sizing: border-box; color: var(--text); }
+        .modal-content { background: var(--modal); width: 100%; max-width: 340px; padding: 18px; border-radius: 20px; box-sizing: border-box; color: var(--text); position: relative; }
+        .help-text { font-size: 14px; line-height: 1.6; max-height: 60vh; overflow-y: auto; text-align: left; }
+        .help-text b { color: var(--accent); }
+        
         .form-row { display: flex; align-items: center; margin-bottom: 15px; gap: 4px; }
         .form-row label { width: 55px; font-weight: 800; color: var(--text); font-size: 17px; flex-shrink: 0; }
         .form-row input { flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 16px; outline: none; }
@@ -71,7 +84,13 @@
 <div class="app">
     <div class="header">
         <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
-        <div class="month-display"><span id="mLabel"></span><div class="today-btn" onclick="goToday()">🧋</div></div>
+        <div class="month-display">
+            <span id="mLabel"></span>
+            <div class="btn-group">
+                <div class="help-btn" onclick="showHelp()">❓</div>
+                <div class="today-btn" onclick="goToday()">🧋</div>
+            </div>
+        </div>
         <button class="nav-btn" onclick="changeMonth(1)">▶</button>
     </div>
     <button class="record-btn" onclick="showList()">📋 出入境紀錄管理</button>
@@ -87,6 +106,23 @@
             </div>
             天，最快可自 <span id="earliestDate">----/--/--</span> 起入境
         </div>
+    </div>
+</div>
+
+<div id="mHelp" class="modal" onclick="if(event.target==this)hide('mHelp')">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--primary);">使用說明</h3>
+        <div class="help-text">
+            <b>1. 開始使用</b><br>
+            點擊「紀錄管理」>「新增」，輸入歷史出入境日期。日曆右下角即會顯示該日剩餘天數。<br><br>
+            <b>2. 行程試算</b><br>
+            在首頁最下方輸入未來計畫停留的天數，系統會自動算出最後一筆紀錄後「最快出發日」。<br><br>
+            <b>3. 備份資料 (重要)</b><br>
+            資料僅儲存在此瀏覽器。換手機前請點擊「紀錄管理」>「備份」，將代碼貼至記事本保存。<br><br>
+            <b>4. 還原資料</b><br>
+            在新手機點擊「還原」並貼上代碼即可。
+        </div>
+        <button class="back-btn" onclick="hide('mHelp')">了解了</button>
     </div>
 </div>
 
@@ -116,6 +152,7 @@
     let editIdx = -1;
 
     function hide(id) { document.getElementById(id).style.display='none'; }
+    function showHelp() { document.getElementById('mHelp').style.display='flex'; }
     function changeMonth(n) { cur.setMonth(cur.getMonth()+n); render(); }
     function goToday() { cur = new Date(); render(); }
     function showList() { document.getElementById('mList').style.display='flex'; renderList(); }
@@ -158,37 +195,24 @@
         return 90 - used;
     }
 
-    // 關鍵搜尋邏輯
     function findEarliestEntry(daysNeeded) {
         if (!daysNeeded || daysNeeded <= 0) return "----/--/--";
         if (data.length === 0) return "請輸入紀錄";
-        
         const lastDateStr = data.reduce((max, item) => item.e > max ? item.e : max, data[0].e);
         const lastDate = new Date(lastDateStr);
         const day1AfterLast = new Date(lastDate); day1AfterLast.setDate(day1AfterLast.getDate() + 1);
-
-        // 判斷 5：檢查最後紀錄後 30 天內是否有不符合的情況
         let allOkIn30Days = true;
         for (let i = 0; i < 30; i++) {
             let checkD = new Date(day1AfterLast); checkD.setDate(checkD.getDate() + i);
             if (getRem(checkD) < daysNeeded) { allOkIn30Days = false; break; }
         }
-        
-        // 若 30 天內都符合需求，直接返回最後一筆紀錄 + 1 天
-        if (allOkIn30Days) {
-            return day1AfterLast.getFullYear() + "/" + String(day1AfterLast.getMonth()+1).padStart(2,'0') + "/" + String(day1AfterLast.getDate()).padStart(2,'0');
-        }
-
-        // 否則，執行滾動回推搜尋
+        if (allOkIn30Days) return day1AfterLast.getFullYear() + "/" + String(day1AfterLast.getMonth()+1).padStart(2,'0') + "/" + String(day1AfterLast.getDate()).padStart(2,'0');
         for (let i = 0; i < 730; i++) {
             let d = new Date(day1AfterLast); d.setDate(d.getDate() + i);
             if (getRem(d) >= daysNeeded) {
                 let entryDate = new Date(d);
                 entryDate.setDate(entryDate.getDate() - (daysNeeded - 1));
-                
-                // 確保此日期絕對大於最後一筆紀錄日期
                 if (entryDate <= lastDate) entryDate = day1AfterLast;
-
                 let isValid = true;
                 for (let k = 0; k < daysNeeded; k++) {
                     let testD = new Date(entryDate); testD.setDate(testD.getDate() + k);
@@ -215,12 +239,9 @@
 
     function render() {
         document.getElementById('mLabel').innerText = `${cur.getFullYear()}年 ${cur.getMonth()+1}月`;
-        // 修正 13 月問題
         const m1Y = cur.getFullYear(), m1M = cur.getMonth();
         const m2Date = new Date(m1Y, m1M + 1, 1);
         document.getElementById('calBox').innerHTML = renderMonth(m1Y, m1M) + renderMonth(m2Date.getFullYear(), m2Date.getMonth());
-        
-        // 更新第一排文字
         if (data.length > 0) {
             const lastDateStr = data.reduce((max, item) => item.e > max ? item.e : max, data[0].e);
             const rem = getRem(new Date(lastDateStr));
