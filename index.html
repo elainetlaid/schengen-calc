@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Schengen Pro</title>
+    <title>Schengen Calculator</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="申根計算">
@@ -14,11 +14,13 @@
         :root { 
             --primary: #1a2a6c; --stay-color: #b3c7ff; --accent: #ff4757; --warning: #ffa500; --success: #28a745;
             --bg: #fdfdfd; --text: #333; --card: #f0f4ff; --border: #ddd; --modal: #fff; --footer-text: #1a2a6c;
+            --header-bg: rgba(255, 255, 255, 0.8);
         }
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: #1a1a1a; --text: #eee; --card: #2c2c2e; --border: #444; --modal: #2c2c2e;
                 --stay-color: #3a5ba0; --footer-text: #ffffff;
+                --header-bg: rgba(26, 26, 26, 0.9);
             }
             body { background: #000; color: #eee; }
             h3 { color: #fff !important; }
@@ -29,10 +31,37 @@
             .action-btn { background: var(--card) !important; color: var(--text) !important; border-color: var(--border) !important; }
             .back-btn { background: #3a3a3c !important; color: white !important; }
         }
-        body { background: #222; margin: 0; display: flex; justify-content: center; font-family: -apple-system, sans-serif; color: var(--text); }
-        .app { width: 390px; height: 100vh; background: var(--bg); padding: env(safe-area-inset-top) 10px 0; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 12px; }
+        body { background: #222; margin: 0; display: flex; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--text); }
+        
+        .app { width: 390px; height: 100vh; background: var(--bg); box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* 新增：頂部標題列 (防止誤觸靈動島) */
+        .top-bar {
+            padding-top: env(safe-area-inset-top); /* 自動閃開狀態列 */
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+        .top-bar-content {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            position: relative;
+        }
+        .app-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        @media (prefers-color-scheme: dark) { .app-title { color: #fff; } }
+
+        /* 月份切換區域 (已下移) */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; }
         .month-selector-btn { border: none; background: transparent; font-weight: bold; font-size: 16px; color: var(--text); cursor: pointer; padding: 5px 10px; border-radius: 8px; }
         .month-display { display: flex; align-items: center; gap: 4px; }
         .today-btn { background: #eee; border: 1px solid #ccc; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; line-height: 1; }
@@ -50,38 +79,15 @@
         .stay-start { border-radius: 8px 0 0 8px; }
         .stay-end { border-radius: 0 8px 8px 0; }
 
-        /* 拆分：按鈕區域 (漂浮感) */
-        .btn-container {
-            padding: 5px 10px 10px;
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .action-btn { 
-            background: white; 
-            color: var(--primary); 
-            border: 1.5px solid var(--primary); 
-            padding: 10px; 
-            border-radius: 12px; 
-            font-size: 14px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+        .btn-container { padding: 5px 10px 10px; display: flex; gap: 8px; flex-shrink: 0; }
+        .action-btn { background: white; color: var(--primary); border: 1.5px solid var(--primary); padding: 10px; border-radius: 12px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1; }
         .btn-main { flex: 2; }
-        .btn-sub { flex: 1; }
 
-        /* 拆分：置底統計區域 */
         .footer-summary { 
             padding: 15px 5px calc(15px + env(safe-area-inset-bottom)); 
-            background: var(--card); 
-            border-top: 1px solid var(--border); 
-            border-radius: 20px 20px 0 0; 
-            flex-shrink: 0; 
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            background: var(--card); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; flex-shrink: 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
         }
-
-        .footer-line { margin: 4px 0; font-size: 13px; font-weight: bold; color: var(--footer-text); white-space: nowrap; display: flex; justify-content: center; align-items: center; gap: 4px; }
+        .footer-line { margin: 4px 0; font-size: 13px; font-weight: bold; color: var(--footer-text); display: flex; justify-content: center; align-items: center; gap: 4px; }
         .footer-line span { color: var(--accent); font-size: 14.5px; }
         .calc-input-group { display: flex; align-items: center; gap: 5px; }
         .calc-input { width: 45px; background: rgba(128, 128, 128, 0.1); border: 1px solid var(--border); border-radius: 5px; color: var(--accent); font-weight: 900; font-size: 16px; text-align: center; padding: 2px 0; outline: none; }
@@ -90,7 +96,6 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999; padding: 20px; }
         .modal-content { background: var(--modal); width: 100%; max-width: 340px; padding: 18px; border-radius: 20px; box-sizing: border-box; color: var(--text); position: relative; }
         .help-text { font-size: 14px; line-height: 1.6; max-height: 60vh; overflow-y: auto; text-align: left; }
-        
         .form-row { display: flex; align-items: center; margin-bottom: 15px; gap: 8px; }
         .form-row label { width: 55px; font-weight: 800; color: var(--text); font-size: 17px; flex-shrink: 0; }
         .form-row input, .form-row select { flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 16px; outline: none; }
@@ -103,6 +108,12 @@
 </head>
 <body>
 <div class="app">
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <span class="app-title">Schengen Calculator</span>
+        </div>
+    </div>
+
     <div class="header">
         <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
         <div class="month-display">
@@ -116,7 +127,7 @@
     
     <div class="btn-container">
         <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
-        <button class="action-btn btn-sub" onclick="showHelp()">❓使用說明</button>
+        <button class="action-btn" onclick="showHelp()">❓使用說明</button>
     </div>
 
     <div class="footer-summary" id="footerSummary">
@@ -136,18 +147,12 @@
 <div id="mJump" class="modal" onclick="if(event.target==this)hide('mJump')">
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--primary);">快速跳轉日期</h3>
-        <div class="form-row">
-            <label>年份</label>
-            <select id="jumpYear"></select>
-        </div>
-        <div class="form-row">
-            <label>月份</label>
-            <select id="jumpMonth">
-                <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option><option value="3">4月</option>
-                <option value="4">5月</option><option value="5">6月</option><option value="6">7月</option><option value="7">8月</option>
-                <option value="8">9月</option><option value="9">10月</option><option value="11">11月</option><option value="12">12月</option>
-            </select>
-        </div>
+        <div class="form-row"><label>年份</label><select id="jumpYear"></select></div>
+        <div class="form-row"><label>月份</label><select id="jumpMonth">
+            <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option><option value="3">4月</option>
+            <option value="4">5月</option><option value="5">6月</option><option value="6">7月</option><option value="7">8月</option>
+            <option value="8">9月</option><option value="9">10月</option><option value="10">11月</option><option value="11">12月</option>
+        </select></div>
         <button class="main-btn" onclick="executeJump()">跳轉</button>
         <button class="back-btn" onclick="hide('mJump')">取消</button>
     </div>
@@ -157,10 +162,10 @@
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--primary);">使用說明</h3>
         <div class="help-text">
-            <b>1. 開始使用</b><br>點擊「紀錄管理」>「新增」，輸入歷史出入境日期。日曆右下角會顯示該日剩餘天數。<br><br>
-            <b>2. 行程試算</b><br>在下方的輸入框填入計畫停留天數，系統會自動算出最後紀錄後「最快出發日」。<br><br>
-            <b>3. 快速切換</b><br>點擊頂部年份月份文字，可快速跳轉到指定日期。<br><br>
-            <b>4. 備份與還原</b><br>本工具無雲端儲存。換手機前請至「紀錄管理」>「備份」，將代碼存至記事本。新手機點擊「還原」貼上即可。
+            <b>1. 開始使用</b><br>點擊「紀錄管理」>「新增」，輸入歷史出入境日期。日曆右下角顯示該日剩餘天數。<br><br>
+            <b>2. 行程試算</b><br>在下方輸入計畫停留天數，系統自動算出「最快出發日」。<br><br>
+            <b>3. 快速切換</b><br>點擊頂部年份月份文字，可快速跳轉指定日期。<br><br>
+            <b>4. 備份與還原</b><br>本工具無雲端儲存。換手機前請至「紀錄管理」>「備份」存至記事本。新手機點擊「還原」即可。
         </div>
         <button class="back-btn" onclick="hide('mHelp')">了解了</button>
     </div>
