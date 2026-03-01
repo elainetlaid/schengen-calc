@@ -67,7 +67,6 @@
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--primary); color: white; font-weight: bold; text-align: center; padding: 4px 0; font-size: 12px; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 10px; }
         
-        /* 1. 日期格子縮小 */
         .day { background: white; height: 39px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; box-sizing: border-box; }
         .day span { position: absolute; top: 1px; left: 3px; font-size: 14px; font-weight: 600; color: #333; }
         .remain { position: absolute; right: 1.5px; bottom: 1px; font-size: 10px; color: #888; font-weight: bold; }
@@ -106,9 +105,11 @@
         .rotate { display: inline-block; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
-        /* 說明文字排版優化 */
-        .help-text { max-height: 350px; overflow-y: auto; font-size: 14px; line-height: 1.6; padding-right: 5px; }
-        .help-text b { color: var(--primary); display: block; margin-top: 12px; border-left: 3px solid var(--primary); padding-left: 8px; }
+        /* 說明文字排版 */
+        .help-text { max-height: 380px; overflow-y: auto; font-size: 14px; line-height: 1.6; text-align: justify; }
+        .help-item { margin-bottom: 12px; }
+        .help-item b { color: var(--primary); display: block; margin-bottom: 2px; font-size: 15px; }
+        .help-item div { padding-left: 4px; color: var(--text); opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -167,27 +168,35 @@
 
 <div id="mHelp" class="modal" onclick="if(event.target==this)hide('mHelp')">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:var(--primary);">Schengen Calc 使用說明</h3>
+        <h3 style="margin-top:0; color:var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px;">使用說明</h3>
         <div class="help-text">
-            <b>1. 紀錄入出境日期</b>
-            點擊「紀錄管理」>「新增」，輸入日期與備註。紀錄會自動排序。
-            
-            <b>2. 日曆數值說明</b>
-            日曆格子右下角的數字代表：<b>「截至當天，未來 180 天內剩餘可待天數」</b>。若數字變紅，表示已超過申根區上限。
-            
-            <b>3. 行程試算功能</b>
-            在底部輸入「預計待幾天」（可用 +/- 微調），系統會自動掃描未來的剩餘額度，計算出您<b>最快可以入境</b>的日期。
-            
-            <b>4. 日曆操作</b>
-            可上下滑動查看連續兩個月。點擊頂部「年份月份」文字可快速跳轉，藍色果實按鈕可回到今日。
-            
-            <b>5. 檢查更新 (NEW)</b>
-            在紀錄管理下方，點擊「✨ 檢查更新」可強迫從伺服器抓取新版功能。<b>執行此操作不會遺失現有紀錄。</b>
-            
-            <b>6. 備份與還原</b>
-            資料僅存在手機瀏覽器。更換設備前，點擊「💾 備份」將代碼複製並存於記事本，在新設備點擊「🔄 還原」貼上即可移轉。
+            <div class="help-item">
+                <b>1. 輸入出入境日期</b>
+                <div>點擊「📋 出入境紀錄管理」→「+ 新增」，輸入日期與備註。</div>
+            </div>
+            <div class="help-item">
+                <b>2. 日曆數值說明</b>
+                <div>日曆格子右下角數字代表「截至當天，未來180天內剩餘可入境天數」，若數字變紅則表示已超過申根區上限。</div>
+            </div>
+            <div class="help-item">
+                <b>3. 行程試算功能</b>
+                <div>在底部輸入「預計入境天數」(可用 +/- 微調)，系統會自動計算出最快可再次入境的日期。</div>
+            </div>
+            <div class="help-item">
+                <b>4. 日曆操作</b>
+                <div>首頁固定顯示連續兩個月的日曆，點擊頂部「年份月份」字樣可快速跳轉，點擊右方圖樣按鈕可回到當前月份。</div>
+            </div>
+            <div class="help-item">
+                <b>5. 檢查更新</b>
+                <div>點擊「📋 出入境紀錄管理」→「✨ 檢查更新」可更新版本，執行此操作不會遺失現有紀錄。</div>
+            </div>
+            <div class="help-item">
+                <b>6. 備份與還原</b>
+                <div>點擊「💾 備份」按鈕，系統會自動複製現有紀錄並轉成代碼，您可將代碼貼到 LINE、記事本、Email 等方式來保存紀錄。</div>
+                <div style="margin-top: 4px;">點擊「🔄 還原」按鈕，將複製好的代碼直接貼上，即可導入紀錄。</div>
+            </div>
         </div>
-        <button class="back-btn" onclick="hide('mHelp')">了解了</button>
+        <button class="back-btn" onclick="hide('mHelp')" style="margin-top: 15px;">了解了</button>
     </div>
 </div>
 
@@ -366,8 +375,8 @@
         return html + `</div>`;
     }
 
-    function exportData() { const el = document.createElement('textarea'); el.value = JSON.stringify(data); document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("已複製！"); }
-    function importData() { const c = prompt("貼上代碼："); if(c) { try{ data = JSON.parse(c); data.sort((a,b) => new Date(b.s) - new Date(a.s)); localStorage.setItem("schengen_data_v5", JSON.stringify(data)); render(); alert("導入成功"); } catch(e){ alert("代碼錯誤"); } } }
+    function exportData() { const el = document.createElement('textarea'); el.value = JSON.stringify(data); document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("已複製！紀錄已轉成代碼並存入剪貼簿。"); }
+    function importData() { const c = prompt("請貼上備份代碼："); if(c) { try{ data = JSON.parse(c); data.sort((a,b) => new Date(b.s) - new Date(a.s)); localStorage.setItem("schengen_data_v5", JSON.stringify(data)); render(); alert("紀錄導入成功！"); } catch(e){ alert("代碼格式錯誤，請確保貼上的是完整的備份代碼。"); } } }
 
     function forceUpdate() {
         const btn = document.getElementById('updateBtn');
