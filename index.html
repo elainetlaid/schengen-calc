@@ -105,7 +105,6 @@
         .rotate { display: inline-block; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         
-        /* 說明文字排版 */
         .help-text { max-height: 380px; overflow-y: auto; font-size: 14px; line-height: 1.6; text-align: justify; }
         .help-item { margin-bottom: 12px; }
         .help-item b { color: var(--primary); display: block; margin-bottom: 2px; font-size: 15px; }
@@ -124,7 +123,7 @@
         <button class="nav-btn" onclick="changeMonth(-1)">◀</button>
         <div class="month-display">
             <button id="mLabel" class="month-selector-btn" onclick="showJump()">----年 --月</button>
-            <div class="today-btn" onclick="goToday()">🫐</div>
+            <div class="today-btn" onclick="goToday()">📆</div>
         </div>
         <button class="nav-btn" onclick="changeMonth(1)">▶</button>
     </div>
@@ -134,7 +133,7 @@
     <div class="bottom-section">
         <div class="btn-container">
             <button class="action-btn btn-main" onclick="showList()">📋 出入境紀錄管理</button>
-            <button class="action-btn" onclick="showHelp()">❓使用說明</button>
+            <button class="action-btn" onclick="showHelp()">💡使用說明</button>
         </div>
 
         <div class="footer-summary" id="footerSummary">
@@ -172,7 +171,7 @@
         <div class="help-text">
             <div class="help-item">
                 <b>1. 輸入出入境日期</b>
-                <div>點擊「📋 出入境紀錄管理」→「+ 新增」，輸入日期與備註。</div>
+                <div>點擊「📋 出入境紀錄管理」→「+ 新增」，輸入日期與備註。備註會顯示在日期格子左下角。</div>
             </div>
             <div class="help-item">
                 <b>2. 日曆數值說明</b>
@@ -271,10 +270,20 @@
         if(editIdx === -1) data.push({s, e, n}); else data[editIdx] = {s, e, n};
         data.sort((a,b) => new Date(b.s) - new Date(a.s));
         localStorage.setItem("schengen_data_v5", JSON.stringify(data));
-        hide('mEdit'); render();
+        hide('mEdit'); 
+        render();      // 更新主日曆
+        renderList();  // 即時更新歷史列表
     }
 
-    function del() { if(confirm("確定刪除？")) { data.splice(editIdx,1); localStorage.setItem("schengen_data_v5", JSON.stringify(data)); hide('mEdit'); render(); } }
+    function del() { 
+        if(confirm("確定刪除？")) { 
+            data.splice(editIdx,1); 
+            localStorage.setItem("schengen_data_v5", JSON.stringify(data)); 
+            hide('mEdit'); 
+            render();      // 更新主日曆
+            renderList();  // 即時更新歷史列表
+        } 
+    }
 
     function renderList() {
         data.sort((a,b) => new Date(b.s) - new Date(a.s));
@@ -376,7 +385,7 @@
     }
 
     function exportData() { const el = document.createElement('textarea'); el.value = JSON.stringify(data); document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("已複製！紀錄已轉成代碼並存入剪貼簿。"); }
-    function importData() { const c = prompt("請貼上備份代碼："); if(c) { try{ data = JSON.parse(c); data.sort((a,b) => new Date(b.s) - new Date(a.s)); localStorage.setItem("schengen_data_v5", JSON.stringify(data)); render(); alert("紀錄導入成功！"); } catch(e){ alert("代碼格式錯誤，請確保貼上的是完整的備份代碼。"); } } }
+    function importData() { const c = prompt("請貼上備份代碼："); if(c) { try{ data = JSON.parse(c); data.sort((a,b) => new Date(b.s) - new Date(a.s)); localStorage.setItem("schengen_data_v5", JSON.stringify(data)); render(); renderList(); alert("紀錄導入成功！"); } catch(e){ alert("代碼格式錯誤，請確保貼上的是完整的備份代碼。"); } } }
 
     function forceUpdate() {
         const btn = document.getElementById('updateBtn');
