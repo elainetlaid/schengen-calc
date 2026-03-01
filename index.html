@@ -66,7 +66,9 @@
         
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--primary); color: white; font-weight: bold; text-align: center; padding: 4px 0; font-size: 12px; }
         .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid var(--border); border-top: 1px solid var(--border); margin-bottom: 10px; }
-        .day { background: white; height: 42px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; box-sizing: border-box; }
+        
+        /* 1. 日期格子縮小 */
+        .day { background: white; height: 39px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; box-sizing: border-box; }
         .day span { position: absolute; top: 1px; left: 3px; font-size: 14px; font-weight: 600; color: #333; }
         .remain { position: absolute; right: 1.5px; bottom: 1px; font-size: 10px; color: #888; font-weight: bold; }
         .rem-warn { color: var(--warning) !important; font-size: 11px; }
@@ -103,6 +105,10 @@
         .sec-btn { background: transparent; border: 1px solid var(--border); color: #888; padding: 8px; border-radius: 8px; font-size: 12px; flex: 1; }
         .rotate { display: inline-block; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        /* 說明文字排版優化 */
+        .help-text { max-height: 350px; overflow-y: auto; font-size: 14px; line-height: 1.6; padding-right: 5px; }
+        .help-text b { color: var(--primary); display: block; margin-top: 12px; border-left: 3px solid var(--primary); padding-left: 8px; }
     </style>
 </head>
 <body>
@@ -161,12 +167,25 @@
 
 <div id="mHelp" class="modal" onclick="if(event.target==this)hide('mHelp')">
     <div class="modal-content">
-        <h3 style="margin-top:0; color:var(--primary);">使用說明</h3>
+        <h3 style="margin-top:0; color:var(--primary);">Schengen Calc 使用說明</h3>
         <div class="help-text">
-            <b>1. 開始使用</b><br>點擊「紀錄管理」>「新增」，輸入歷史出入境日期。日曆右下角顯示該日剩餘天數。<br><br>
-            <b>2. 行程試算</b><br>在下方輸入計畫停留天數，系統自動算出「最快出發日」。<br><br>
-            <b>3. 快速切換</b><br>點擊頂部年份月份文字，可快速跳轉指定日期。<br><br>
-            <b>4. 備份與還原</b><br>本工具無雲端儲存。換手機前請至「紀錄管理」>「備份」存至記事本。新手機點擊「還原」即可。
+            <b>1. 紀錄入出境日期</b>
+            點擊「紀錄管理」>「新增」，輸入日期與備註。紀錄會自動排序。
+            
+            <b>2. 日曆數值說明</b>
+            日曆格子右下角的數字代表：<b>「截至當天，未來 180 天內剩餘可待天數」</b>。若數字變紅，表示已超過申根區上限。
+            
+            <b>3. 行程試算功能</b>
+            在底部輸入「預計待幾天」（可用 +/- 微調），系統會自動掃描未來的剩餘額度，計算出您<b>最快可以入境</b>的日期。
+            
+            <b>4. 日曆操作</b>
+            可上下滑動查看連續兩個月。點擊頂部「年份月份」文字可快速跳轉，藍色果實按鈕可回到今日。
+            
+            <b>5. 檢查更新 (NEW)</b>
+            在紀錄管理下方，點擊「✨ 檢查更新」可強迫從伺服器抓取新版功能。<b>執行此操作不會遺失現有紀錄。</b>
+            
+            <b>6. 備份與還原</b>
+            資料僅存在手機瀏覽器。更換設備前，點擊「💾 備份」將代碼複製並存於記事本，在新設備點擊「🔄 還原」貼上即可移轉。
         </div>
         <button class="back-btn" onclick="hide('mHelp')">了解了</button>
     </div>
@@ -216,8 +235,8 @@
             const y = new Date(item.s).getFullYear();
             if(y < minYear) minYear = y;
         });
-        const startYear = minYear - 1;
-        const endYear = new Date().getFullYear() + 1;
+        const startYear = Math.min(minYear - 1, new Date().getFullYear() - 1);
+        const endYear = new Date().getFullYear() + 2;
         for(let i = startYear; i <= endYear; i++) {
             const opt = document.createElement('option');
             opt.value = i; opt.innerText = i + "年";
